@@ -36,3 +36,24 @@ for user in response_users:
                 print(f'{cart["date"].split(sep="T")[0]} купил в интернет-магазине\n{json.dumps(cart["products"], indent=2)}')
 if not flag:
     print(f'Нет покупателя с id = {id_user}')
+
+
+print("="*10, 'Задание № 3', "="*10)
+
+id_user = int(input("Введите цифровой идентификатор аккаунта VK: ").strip())
+base_url = "https://api.vk.com/method/"
+method_api = "friends.get"
+payload = {
+    "user_id": id_user,
+    "order": "name",
+    "access_token": "068d17a3068d17a3068d17a3460595bafc0068d068d17a360e639740403fb356622506a",
+    "v": 5.199
+}
+url_vk = f"{base_url}{method_api}"
+
+response_vk = requests.post(url_vk, params=payload)
+count = response_vk.json()["response"]["count"]
+print(f'\nУ пользователя с id{id_user} {count} друзей')
+
+# print(response_vk.status_code)
+# print(response_vk.url)
