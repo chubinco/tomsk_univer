@@ -2,7 +2,9 @@ import requests
 import json
 
 print("="*10, 'Задание № 1', "="*10)
+
 url = "https://fakestoreapi.com/products/categories"
+url_prod = "https://fakestoreapi.com/products/category/"
 
 response = requests.get(url).json()
 cat = json.dumps(response)
@@ -13,18 +15,25 @@ print(f'В интернет-магазине представлены катег
 
 choice_user = (input('Какая категория товаров Вас интересуют?:  ')).strip()
 if choice_user in categories:
-    print(f'\nВыбор покупателя: {choice_user.capitalize()}\n\n')
+    print(f'\nВыбор покупателя: {choice_user.capitalize()}\n')
+    r = requests.get(url_prod + choice_user).json()
+    for product in r:
+        print('* ', product['title'].capitalize())
 else:
     print(f'Такой категории товаров нет в интернет-магазине\n\n')
 
+
+
 print("="*10, 'Задание № 2', "="*10)
+
 url_1 = "https://fakestoreapi.com/carts"
 url_2 = "https://fakestoreapi.com/users"
+url_3 = "https://fakestoreapi.com/products"
 
 id_user = int(input(f'Сообщите свой id и узнаете о своих корзинах заказов:  '))
 response_carts = requests.get(url_1).json()
 response_users = requests.get(url_2).json()
-carts = json.dumps(response_carts, indent=2)
+response_products = requests.get(url_3).json()
 
 flag = False
 for user in response_users:
@@ -33,9 +42,15 @@ for user in response_users:
         for cart in response_carts:
             if int(cart["id"]) == id_user:
                 print(f'Покупатель {user["name"]["firstname"].capitalize()} {user["name"]["lastname"].capitalize()}')
-                print(f'{cart["date"].split(sep="T")[0]} купил в интернет-магазине\n{json.dumps(cart["products"], indent=2)}')
+                print(f'{cart["date"].split(sep="T")[0]} купил в интернет-магазине:')
+                cart_user = cart["products"]
+                for i in cart_user:
+                    for k in response_products:
+                        if i['productId'] == k['id']:
+                            print(f'=> {k["title"]} в количестве {i["quantity"]} штук(и)')
 if not flag:
     print(f'Нет покупателя с id = {id_user}')
+
 
 
 print("="*10, 'Задание № 3', "="*10)
@@ -54,6 +69,3 @@ url_vk = f"{base_url}{method_api}"
 response_vk = requests.post(url_vk, params=payload)
 count = response_vk.json()["response"]["count"]
 print(f'\nУ пользователя с id{id_user} {count} друзей')
-
-# print(response_vk.status_code)
-# print(response_vk.url)
